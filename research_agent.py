@@ -10,14 +10,18 @@ from crewai import Agent, Crew, LLM, Process, Task  # noqa: E402
 
 from tools import web_search  # noqa: E402
 
-MODEL_NAME = "groq/openai/gpt-oss-120b"  # "groq/" tells CrewAI to use the Groq API
+# Groq speaks the "OpenAI-compatible" language, so we use CrewAI's OpenAI connector
+# and point it at Groq's address. The first "openai/" selects the connector;
+# the rest ("openai/gpt-oss-120b") is the real model name on Groq.
+MODEL_NAME = "openai/openai/gpt-oss-120b"
+GROQ_BASE_URL = "https://api.groq.com/openai/v1"
 
 
 def run_research(topic: str, api_key: str) -> str:
     """Research `topic` on the web and return a Markdown report (as text)."""
 
     # 1) The brain: the LLM served by Groq
-    llm = LLM(model=MODEL_NAME, api_key=api_key, temperature=0.3)
+    llm = LLM(model=MODEL_NAME, api_key=api_key, base_url=GROQ_BASE_URL, temperature=0.3)
 
     # 2) The agent: a researcher that can use the search tool
     researcher = Agent(
